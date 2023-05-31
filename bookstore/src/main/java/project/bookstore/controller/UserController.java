@@ -14,7 +14,6 @@ public class UserController {
 
     @Autowired
     UserService userService;
-
     @PostMapping("/addCart/{id}")
     public ResponseEntity<?> addCart(@RequestBody CartRequest cartRequest, @PathVariable(name = "id") Long id) {
         try {
@@ -51,6 +50,5 @@ public class UserController {
     public ResponseEntity<?> viewOrder() {
         return ResponseEntity.ok().body(userService.viewOrder());
     }
-
 
 }

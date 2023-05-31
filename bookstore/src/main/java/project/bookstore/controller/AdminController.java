@@ -45,5 +45,10 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.addBookQuantity(id, quantity));
     }
 
+    @DeleteMapping("/deleteUser/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.deleteUser(id));
+
+    }
 
 }

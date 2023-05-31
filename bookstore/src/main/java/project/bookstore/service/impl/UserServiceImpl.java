@@ -5,14 +5,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import project.bookstore.entity.Book;
-import project.bookstore.entity.Cart;
-import project.bookstore.entity.Order;
-import project.bookstore.entity.User;
-import project.bookstore.repo.BookRepo;
-import project.bookstore.repo.CartRepo;
-import project.bookstore.repo.OrderRepo;
-import project.bookstore.repo.UserRepo;
+import project.bookstore.entity.*;
+import project.bookstore.repo.*;
 import project.bookstore.request.CartRequest;
 import project.bookstore.response.CartResponse;
 import project.bookstore.response.PurchaseResponse;
@@ -30,6 +24,7 @@ public class UserServiceImpl implements UserService {
     OrderRepo orderRepo;
     @Autowired
     CartRepo cartRepo;
+
 
 
 
@@ -123,40 +118,36 @@ public class UserServiceImpl implements UserService {
         Date date = new Date(System.currentTimeMillis());
         User user = getUser();
         List<Cart> finalCart = cartRepo.findAllByGroupBookId(user.getId());
+        Set<OrderDetails> orderDetailset = new HashSet<OrderDetails>();
         Double total = 0.0;
-        for (Cart c : finalCart) {
-            total += c.getPrice();
-        }
         Order order = new Order();
         order.setUserId(user.getId());
         order.setOrderStatus("pending");
         order.setPaymentStatus(payment_status);
         order.setOrderDate(date);
-        order.setAmount(total);
         orderRepo.save(order);
 
-        orderList.put(orderRepo.findById(order.getId()).get().getId(), finalCart);
+        for (Cart c : finalCart) {
+            total += c.getPrice();
+            OrderDetails orderDetails = new OrderDetails();
+            orderDetails.setQuantity(c.getQuantity());
+            orderDetails.setBookId(c.getBookId());
+            orderDetailset.add(orderDetails);
+        }
 
-        PurchaseResponse purchaseResponse = new PurchaseResponse(orderRepo.findById(order.getId()),finalCart);
-
+        order.setAmount(total);
+        order.setOrderDetails(orderDetailset);
+        orderRepo.save(order);
+//        orderList.put(orderRepo.findById(order.getId()).get().getId(), finalCart);
+        PurchaseResponse purchaseResponse = new PurchaseResponse(orderRepo.findById(order.getId()));
         cartRepo.deleteAllByUserId(user.getId());
-        System.out.println(orderList);
         return purchaseResponse;
     }
     @Override
     public String cancelOrder(Long id) {
-        List<Cart> listCart = orderList.get(id);
-        for (Cart cart: listCart) {
-            Book book = bookRepo.findById(cart.getBookId()).get();
-            long quantity = book.getQuantity();
-            book.setQuantity(quantity+ cart.getQuantity());
-            bookRepo.save(book);
-        }
         orderList.remove(id);
         orderRepo.deleteById(id);
         return "huy don thanh cong";
-        //sua loi listCart null
-        // loi khong luu duoc lau
     }
 
     @Override

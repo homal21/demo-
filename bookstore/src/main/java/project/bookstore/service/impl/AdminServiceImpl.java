@@ -54,4 +54,14 @@ public class AdminServiceImpl implements AdminService {
         bookRepo.save(book);
         return "Them sach moi thanh cong";
     }
+
+    @Override
+    public String deleteUser(Long id) {
+        if (userRepo.existsUserById(id)) {
+            userRepo.deleteUserById(id);
+        } else {
+            return "ko ton tai user";
+        }
+        return "xoa User thanh cong";
+    }
 }

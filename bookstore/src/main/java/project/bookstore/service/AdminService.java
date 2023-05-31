@@ -19,4 +19,6 @@ public interface AdminService {
 
     public String addBookQuantity(Long id, Long quantity);
 
+    public String deleteUser(Long id);
+
 }

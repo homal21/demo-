@@ -2,9 +2,14 @@ package project.bookstore.entity;
 
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -26,5 +31,7 @@ public class Order {
     private String shippingStatus;
     @Column(name = "amount")
     private Double amount;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private Set<OrderDetails> orderDetails;
 
 }
